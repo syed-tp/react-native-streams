@@ -1,7 +1,8 @@
 import { codegenNativeComponent, type ViewProps } from 'react-native';
 
 interface NativeProps extends ViewProps {
-  color?: string;
+  assetId: string;
+  accessToken: string;
 }
 
 export default codegenNativeComponent<NativeProps>('StreamsView');
