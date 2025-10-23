@@ -4,7 +4,11 @@ import { StreamsView } from 'react-native-streams';
 export default function App() {
   return (
     <View style={styles.container}>
-      <StreamsView color="#32a852" style={styles.box} />
+      <StreamsView
+        assetId="57gHcHDBxKX"
+        accessToken="5e28479d-69d8-41c7-9664-79b7eb8f1f95"
+        style={{ width: '100%', height: 240 }}
+      />
     </View>
   );
 }
@@ -16,8 +20,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   box: {
-    width: 60,
-    height: 60,
+    width: '100%',
+    height: 250,
     marginVertical: 20,
   },
 });
