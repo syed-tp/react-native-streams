@@ -1,9 +1,14 @@
+/*
+ Imports for the Streams Fabric component: descriptors, props, events, helpers,
+ and registration utilities to expose the component to React Native.
+*/
 #import "StreamsView.h"
+#import <Streams/Streams-Swift.h>
 
-#import <react/renderer/components/StreamsViewSpec/ComponentDescriptors.h>
-#import <react/renderer/components/StreamsViewSpec/EventEmitters.h>
-#import <react/renderer/components/StreamsViewSpec/Props.h>
-#import <react/renderer/components/StreamsViewSpec/RCTComponentViewHelpers.h>
+#import <react/renderer/components/StreamsSpec/ComponentDescriptors.h>
+#import <react/renderer/components/StreamsSpec/EventEmitters.h>
+#import <react/renderer/components/StreamsSpec/Props.h>
+#import <react/renderer/components/StreamsSpec/RCTComponentViewHelpers.h>
 
 #import "RCTFabricComponentsPlugins.h"
 
@@ -13,59 +18,62 @@ using namespace facebook::react;
 
 @end
 
+/*
+ StreamsView: Fabric component view that mounts a Swift-backed UIView and
+ bridges React props to the native view for rendering.
+*/
 @implementation StreamsView {
-    UIView * _view;
+    StreamsSwiftView * _swiftView;
 }
 
+/*
+ Returns the ComponentDescriptor used by the React renderer for this view type.
+*/
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
     return concreteComponentDescriptorProvider<StreamsViewComponentDescriptor>();
 }
 
+/*
+ Designated initializer called by Fabric to create the component view and mount
+ the Swift-backed content view with default props.
+*/
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const StreamsViewProps>();
     _props = defaultProps;
 
-    _view = [[UIView alloc] init];
-
-    self.contentView = _view;
+    _swiftView = [[StreamsSwiftView alloc] init];
+    self.contentView = _swiftView;
   }
 
   return self;
 }
 
+/*
+ Fabric lifecycle hook: called when React props change. Converts C++ props to
+ Objective-C types and forwards them to the Swift view, then completes the
+ superclass update.
+*/
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-    const auto &oldViewProps = *std::static_pointer_cast<StreamsViewProps const>(_props);
     const auto &newViewProps = *std::static_pointer_cast<StreamsViewProps const>(props);
 
-    if (oldViewProps.color != newViewProps.color) {
-        NSString * colorToConvert = [[NSString alloc] initWithUTF8String: newViewProps.color.c_str()];
-        [_view setBackgroundColor:[self hexStringToColor:colorToConvert]];
-    }
-
+    NSMutableDictionary *propsDict = [NSMutableDictionary dictionary];
+    propsDict[@"assetId"] = [NSString stringWithUTF8String:newViewProps.assetId.c_str()];
+    propsDict[@"accessToken"] = [NSString stringWithUTF8String:newViewProps.accessToken.c_str()];
+    [_swiftView updateProps:propsDict];
+    
     [super updateProps:props oldProps:oldProps];
 }
 
+/*
+ Factory function used during registration to return the component view class.
+*/
 Class<RCTComponentViewProtocol> StreamsViewCls(void)
 {
     return StreamsView.class;
-}
-
-- hexStringToColor:(NSString *)stringToConvert
-{
-    NSString *noHashString = [stringToConvert stringByReplacingOccurrencesOfString:@"#" withString:@""];
-    NSScanner *stringScanner = [NSScanner scannerWithString:noHashString];
-
-    unsigned hex;
-    if (![stringScanner scanHexInt:&hex]) return nil;
-    int r = (hex >> 16) & 0xFF;
-    int g = (hex >> 8) & 0xFF;
-    int b = (hex) & 0xFF;
-
-    return [UIColor colorWithRed:r / 255.0f green:g / 255.0f blue:b / 255.0f alpha:1.0f];
 }
 
 @end
