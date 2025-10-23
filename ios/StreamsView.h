@@ -5,8 +5,8 @@
 #import <React/RCTViewComponentView.h>
 #import <UIKit/UIKit.h>
 
-#ifndef StreamsViewNativeComponent_h
-#define StreamsViewNativeComponent_h
+#ifndef StreamsView_h
+#define StreamsView_h
 
 NS_ASSUME_NONNULL_BEGIN
 
