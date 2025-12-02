@@ -63,6 +63,12 @@ using namespace facebook::react;
     NSMutableDictionary *propsDict = [NSMutableDictionary dictionary];
     propsDict[@"assetId"] = [NSString stringWithUTF8String:newViewProps.assetId.c_str()];
     propsDict[@"accessToken"] = [NSString stringWithUTF8String:newViewProps.accessToken.c_str()];
+    propsDict[@"startAt"] = @(newViewProps.startAt);
+    propsDict[@"shouldAutoPlay"] = @(newViewProps.shouldAutoPlay);
+    propsDict[@"showDefaultCaptions"] = @(newViewProps.showDefaultCaptions);
+    propsDict[@"enableDownload"] = @(newViewProps.enableDownload);
+    propsDict[@"offlineLicenseExpireTime"] = @(newViewProps.offlineLicenseExpireTime);
+    
     [_swiftView updateProps:propsDict];
     
     [super updateProps:props oldProps:oldProps];
